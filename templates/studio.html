@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.brand_name }} | Artistry Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        if (localStorage.getItem('artistry_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <style>
+        .protected-artwork {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        .celestial-icon-container {
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+        }
+    </style>
+</head>
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans min-h-screen transition-colors duration-500 overflow-x-hidden">
+    <!-- Navbar -->
+    <header class="border-b border-zinc-200 dark:border-zinc-800 py-3 px-4 sm:px-8 flex justify-between items-center gap-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-50 transition-colors duration-500">
+        <a href="/" class="text-base sm:text-xl font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 shrink-0">Artistry Studio</a>
+
+        <nav aria-label="Primary navigation" class="flex items-center gap-1 sm:gap-2.5">
+            <!-- Home -->
+            <a href="/" title="Home" aria-label="Home" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9.5z" />
+                </svg>
+            </a>
+
+            <!-- Global Gallery (Monochrome Paint Palette) -->
+            <a href="/gallery" title="Global Gallery" aria-label="Global Gallery" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3a9 9 0 00-9 9 9 9 0 009 9 2.25 2.25 0 002.25-2.25c0-.6-.24-1.17-.66-1.59a2.25 2.25 0 011.59-3.84H17.5A3.5 3.5 0 0021 9.82 6.82 6.82 0 0012 3z" />
+                    <circle cx="8.5" cy="10.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="15.5" cy="9.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="8" cy="14.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+            </a>
+
+            <!-- Artists Directory (Monochrome 3-Person Group Busts) -->
+            <a href="/artists" title="Artists Directory" aria-label="Artists Directory" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="7" r="2.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 18.5v-1a4.5 4.5 0 019 0v1" />
+                    <circle cx="5.5" cy="8.5" r="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2 18.5v-.8a3.5 3.5 0 013.5-3.5" />
+                    <circle cx="18.5" cy="8.5" r="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M22 18.5v-.8a3.5 3.5 0 00-3.5-3.5" />
+                </svg>
+            </a>
+
+            <!-- Settings Dropdown Menu (Gear Icon) -->
+            <div class="relative" x-data="{ open: false }">
+                <button type="button" @click="open = !open" @click.away="open = false" title="Settings" aria-label="Settings" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex items-center gap-0.5 focus:outline-none cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl py-2 z-50" style="display: none;">
+                    <a href="/studio/settings/account" class="block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-indigo-600 dark:hover:text-white transition-colors">Account Settings</a>
+                </div>
+            </div>
+
+            <span class="hidden lg:inline-block text-xs bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-900 max-w-[180px] truncate">{{ config.brand_name }}</span>
+
+            <!-- Logout -->
+            <a href="/logout" title="Logout" aria-label="Logout" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1" />
+                </svg>
+            </a>
+
+            <!-- Animated Theme Toggle -->
+            <button id="theme-toggle" type="button" aria-label="Toggle Theme" title="Toggle Theme" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center overflow-hidden focus:outline-none hover:scale-105 transition shadow-sm cursor-pointer shrink-0">
+                <div id="celestial-body" class="celestial-icon-container transform translate-y-8 opacity-0 flex items-center justify-center"></div>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Studio Header & Banner -->
+    <div class="max-w-6xl mx-auto bg-white dark:bg-zinc-900 border-b border-x border-zinc-200 dark:border-zinc-800 shadow-sm rounded-b-2xl overflow-hidden transition-colors duration-500 min-w-0">
+        <div class="h-44 sm:h-64 w-full bg-zinc-200 dark:bg-zinc-800 relative overflow-hidden">
+            <img src="{{ config.cover_url }}" alt="Cover" class="w-full h-full object-cover">
+        </div>
+
+        <div class="px-4 sm:px-8 pb-6 pt-0 relative flex flex-col md:flex-row items-center md:items-end justify-between -mt-14 sm:-mt-16 gap-4 sm:gap-6 min-w-0">
+            <div class="flex flex-col md:flex-row items-center md:items-end gap-4 sm:gap-6 text-center md:text-left min-w-0 w-full">
+                <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-zinc-900 bg-zinc-300 dark:bg-zinc-800 overflow-hidden shadow-md flex-shrink-0">
+                    <img src="{{ config.avatar_url }}" alt="{{ config.brand_name }}" class="w-full h-full object-cover">
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white break-words">{{ config.brand_name }}</h1>
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 max-w-xl break-words">{{ config.bio }}</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 shrink-0">
+                <a href="/site/{{ config.tenant_id }}" target="_blank" class="bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition">View Public Site ↗</a>
+            </div>
+        </div>
+
+        <!-- Studio Navigation Tabs -->
+        <div class="flex border-t border-zinc-200 dark:border-zinc-800 px-4 sm:px-8 gap-4 sm:gap-8 overflow-x-auto">
+            <a href="/studio/{{ config.tenant_id }}?tab=profile" class="py-4 text-xs sm:text-sm font-bold border-b-2 whitespace-nowrap {% if active_tab == 'profile' %}border-indigo-600 text-indigo-600 dark:text-indigo-400{% else %}border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800{% endif %} transition">Edit Profile</a>
+            <a href="/studio/{{ config.tenant_id }}?tab=artworks" class="py-4 text-xs sm:text-sm font-bold border-b-2 whitespace-nowrap {% if active_tab == 'artworks' %}border-indigo-600 text-indigo-600 dark:text-indigo-400{% else %}border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800{% endif %} transition">Artworks & Inventory</a>
+            <a href="/studio/{{ config.tenant_id }}?tab=theme" class="py-4 text-xs sm:text-sm font-bold border-b-2 whitespace-nowrap {% if active_tab == 'theme' %}border-indigo-600 text-indigo-600 dark:text-indigo-400{% else %}border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800{% endif %} transition">Theme & Custom Code</a>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="max-w-6xl mx-auto py-8 sm:py-10 px-3 sm:px-4 min-w-0">
+        
+        <!-- TAB 1: EDIT PROFILE & SOCIAL ICONS -->
+        {% if active_tab == 'profile' %}
+        {% set socials = config.socials or {} %}
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-sm transition-colors duration-500 min-w-0">
+            <h2 class="text-lg sm:text-xl font-black uppercase tracking-wider mb-6 break-words">Edit Studio Profile & Contact Links</h2>
+            <form action="/api/artist/update-profile" method="post" enctype="multipart/form-data" class="space-y-6">
+                <input type="hidden" name="tenant_slug" value="{{ config.tenant_id }}">
+                
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Studio Brand Name</label>
+                    <input type="text" name="brand_name" value="{{ config.brand_name }}" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Artist Bio / Description</label>
+                    <textarea name="bio" rows="3" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600">{{ config.bio }}</textarea>
+                </div>
+
+                <!-- Compact Bio Social Media Icons -->
+                <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
+                    <div>
+                        <h3 class="text-xs font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Bio Social Icons (Optional)</h3>
+                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 break-words">Add your handles or links—they appear as clean, emoji-sized clickable icons right under your bio so buyers can message you.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-zinc-500 mb-1">Instagram (@handle or URL)</label>
+                            <input type="text" name="instagram" value="{{ socials.instagram }}" placeholder="@artistexample" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-zinc-500 mb-1">X / Twitter (@handle or URL)</label>
+                            <input type="text" name="twitter" value="{{ socials.twitter }}" placeholder="@artistexample" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-zinc-500 mb-1">TikTok (@handle or URL)</label>
+                            <input type="text" name="tiktok" value="{{ socials.tiktok }}" placeholder="@artistexample" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-zinc-500 mb-1">YouTube (@handle or URL)</label>
+                            <input type="text" name="youtube" value="{{ socials.youtube }}" placeholder="@artistexample" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-zinc-500 mb-1">ArtStation / Portfolio</label>
+                            <input type="text" name="artstation" value="{{ socials.artstation }}" placeholder="username or URL" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-zinc-500 mb-1">Discord Tag</label>
+                            <input type="text" name="discord" value="{{ socials.discord }}" placeholder="artist#0001 or username" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-3">
+                            <label class="block text-[11px] font-bold text-zinc-500 mb-1">Website / Commission Sheet URL</label>
+                            <input type="text" name="website" value="{{ socials.website }}" placeholder="https://yourportfolio.com" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-indigo-600">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Update Avatar Image (JPG, PNG, WEBP, GIF)</label>
+                        <input type="file" name="avatar" accept="image/*,.gif" class="w-full text-xs text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Update Cover Banner (JPG, PNG, WEBP, GIF)</label>
+                        <input type="file" name="cover" accept="image/*,.gif" class="w-full text-xs text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100">
+                    </div>
+                </div>
+
+                <button type="submit" class="bg-indigo-600 text-white font-bold px-8 py-3.5 rounded-xl text-sm hover:bg-indigo-500 transition shadow-sm cursor-pointer">Save Profile Changes</button>
+            </form>
+        </div>
+
+        <!-- TAB 2: ARTWORKS & INVENTORY -->
+        {% elif active_tab == 'artworks' %}
+        <div class="space-y-12 min-w-0">
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-sm transition-colors duration-500">
+                <h2 class="text-lg sm:text-xl font-black uppercase tracking-wider mb-6 break-words">Upload New Artwork (Images & Animated GIFs)</h2>
+                <form action="/api/artist/artwork/create" method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <input type="hidden" name="tenant_slug" value="{{ config.tenant_id }}">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Artwork Title</label>
+                        <input type="text" name="name" required placeholder="e.g. Celestial Dawn" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Valuation (R)</label>
+                        <input type="number" step="0.01" name="price" required placeholder="1500.00" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Artwork File (Supports .GIF)</label>
+                        <input type="file" name="file" accept="image/*,.gif" required class="w-full text-xs text-zinc-500 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-600">
+                    </div>
+                    <button type="submit" class="bg-indigo-600 text-white font-bold py-3.5 rounded-xl text-sm hover:bg-indigo-500 transition shadow-sm cursor-pointer">Publish Piece</button>
+                </form>
+            </div>
+
+            <div>
+                <h2 class="text-xl sm:text-2xl font-bold uppercase tracking-wider mb-6 border-l-4 border-indigo-600 pl-4 break-words">Your Published Inventory</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+                    {% for p in products %}
+                    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden flex flex-col justify-between group shadow-sm transition-colors duration-500 min-w-0">
+                        <div class="aspect-[4/5] bg-zinc-100 dark:bg-zinc-950 overflow-hidden relative shadow-inner" oncontextmenu="return false;">
+                            <img {% if not p.is_gif %}data-watermark{% endif %} src="{{ p.image_url }}" alt="{{ p.name }}" draggable="false" class="w-full h-full object-cover protected-artwork" crossorigin="anonymous">
+                            <div class="absolute bottom-3 right-3 px-2.5 py-1 bg-black/65 backdrop-blur-md text-white text-[11px] font-bold tracking-wide rounded-lg border border-white/15 shadow-sm">
+                                R {{ "%.2f"|format(p.list_price) }}
+                            </div>
+                        </div>
+
+                        <div class="p-5 sm:p-6 space-y-4 min-w-0">
+                            <div>
+                                <h3 class="font-bold text-base text-zinc-900 dark:text-white break-words">{{ p.name }}</h3>
+                            </div>
+                            
+                            <form action="/api/artist/artwork/edit/{{ p.id }}" method="post" enctype="multipart/form-data" class="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-3">
+                                <input type="hidden" name="tenant_slug" value="{{ config.tenant_id }}">
+                                <input type="text" name="name" value="{{ p.name }}" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs">
+                                <input type="number" step="0.01" name="price" value="{{ p.list_price }}" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs">
+                                <input type="file" name="file" accept="image/*,.gif" class="w-full text-[10px] text-zinc-400">
+                                <button type="submit" class="w-full bg-zinc-900 dark:bg-zinc-800 text-white font-bold py-2 rounded-lg text-xs hover:bg-zinc-800 transition cursor-pointer">Update Piece</button>
+                            </form>
+                            
+                            <form action="/api/artist/artwork/delete/{{ p.id }}" method="post">
+                                <input type="hidden" name="tenant_slug" value="{{ config.tenant_id }}">
+                                <button type="submit" onclick="return confirm('Are you sure you want to remove this artwork?');" class="w-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold py-2 rounded-lg text-xs hover:bg-rose-100 transition cursor-pointer">Delete Piece</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-span-full text-center py-16 text-zinc-400">
+                        <p class="text-sm">No artworks uploaded to your studio yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: THEME & TOYHOUSE-STYLE CUSTOM CODE -->
+        {% elif active_tab == 'theme' %}
+        {% set ts = config.theme_settings %}
+        {% set saved_themes = config.saved_themes or [] %}
+
+        <div class="space-y-8 min-w-0" x-data="{ selectedPreset: '{{ ts.preset_id }}', customMode: {{ 'true' if ts.custom_mode else 'false' }}, themeNameInput: '' }">
+
+            {% if error == 'bg_video_too_large' %}
+            <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold break-words">
+                Background video exceeds the 4 MB (4,096 KB) limit. Please compress or trim your MP4/WebM loop under 4 MB so your studio loads fast and crisp.
+            </div>
+            {% endif %}
+
+            <!-- Saved Custom Themes Vault -->
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <h2 class="text-base font-black uppercase tracking-wider break-words">Saved Custom Themes Vault</h2>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 break-words">Keep multiple named custom themes and switch between them anytime.</p>
+                    </div>
+                    <span class="text-xs font-mono text-zinc-400 shrink-0">{{ saved_themes|length }} saved</span>
+                </div>
+
+                {% if saved_themes|length > 0 %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {% for st in saved_themes %}
+                    <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 min-w-0">
+                        <div class="min-w-0">
+                            <p class="text-xs font-black truncate">{{ st.name }}</p>
+                            <p class="text-[10px] text-zinc-500 font-mono truncate">{{ st.preset_id }}{% if st.bg_image_url %} • custom bg{% endif %}{% if st.custom_mode %} • custom HTML{% endif %}</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <form action="/api/artist/theme/load-named" method="post">
+                                <input type="hidden" name="tenant_slug" value="{{ config.tenant_id }}">
+                                <input type="hidden" name="theme_index" value="{{ loop.index0 }}">
+                                <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white text-[11px] font-bold hover:bg-indigo-500 transition cursor-pointer">Apply</button>
+                            </form>
+                            <form action="/api/artist/theme/delete-named" method="post">
+                                <input type="hidden" name="tenant_slug" value="{{ config.tenant_id }}">
+                                <input type="hidden" name="theme_index" value="{{ loop.index0 }}">
+                                <button type="submit" onclick="return confirm('Delete saved theme \'{{ st.name }}\'?');" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 text-[11px] font-bold hover:bg-rose-100 transition cursor-pointer">✕</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-xs text-zinc-400 break-words">No named custom themes saved yet. Name your setup below and click <strong>Save & Add to My Themes</strong>.</p>
+                {% endif %}
+            </div>
+
+            <!-- Main Active Theme & Code Form -->
+            <form id="theme-editor-form" action="/api/artist/update-theme" method="post" enctype="multipart/form-data" class="space-y-8">
+                <input type="hidden" name="tenant_slug" value="{{ config.tenant_id }}">
+                <input type="hidden" name="preset_id" :value="selectedPreset">
+
+                <!-- 1. Preloaded Exhibition Themes -->
+                <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-sm space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="min-w-0">
+                            <h2 class="text-lg sm:text-xl font-black uppercase tracking-wider break-words">1. Exhibition Theme Presets</h2>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 break-words">Choose a curated studio atmosphere (including Pinterest Masonry Mode)—or layer your own background & CSS on top.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 shrink-0">
+                            <a href="/site/{{ config.tenant_id }}" target="_blank" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">Preview Live Studio ↗</a>
+                            <button type="submit" class="bg-indigo-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs hover:bg-indigo-500 transition shadow-sm cursor-pointer">Save Studio Theme & Code</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {% for key, theme in presets.items() %}
+                        <div @click="selectedPreset = '{{ key }}'"
+                             :class="selectedPreset === '{{ key }}' ? 'ring-2 ring-indigo-600 border-indigo-600' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400'"
+                             class="cursor-pointer rounded-xl border bg-zinc-50 dark:bg-zinc-950 overflow-hidden transition flex flex-col justify-between min-w-0">
+                            <div class="h-14 w-full relative" style="background: {{ theme.preview }};">
+                                <span class="absolute top-2 right-2 px-2 py-0.5 text-[9px] font-black uppercase rounded bg-black/60 text-white backdrop-blur-sm">{{ theme.badge }}</span>
+                            </div>
+                            <div class="p-3 space-y-1">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-xs font-bold break-words">{{ theme.name }}</span>
+                                    <span x-show="selectedPreset === '{{ key }}'" class="w-2 h-2 rounded-full bg-indigo-600 shrink-0"></span>
+                                </div>
+                                <p class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-snug break-words">{{ theme.description }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 2. Layout Structure, Gallery Frames, Custom Backgrounds & Overlays -->
+                <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-sm space-y-6">
+                    <h2 class="text-lg sm:text-xl font-black uppercase tracking-wider break-words">2. Layout Structure, Backgrounds & Frames</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-2">Header Layout</label>
+                            <select name="header_style" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-600">
+                                <option value="banner" {% if ts.header_style == 'banner' %}selected{% endif %}>Classic Banner</option>
+                                <option value="centered" {% if ts.header_style == 'centered' %}selected{% endif %}>Centered Curator</option>
+                                <option value="minimal" {% if ts.header_style == 'minimal' %}selected{% endif %}>Minimal Compact Strip</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-2">Artwork Frame Size & Flow</label>
+                            <select name="frame_size" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-600">
+                                <option value="standard" {% if ts.frame_size == 'standard' %}selected{% endif %}>Standard Portrait (4:5)</option>
+                                <option value="pinterest" {% if ts.frame_size == 'pinterest' %}selected{% endif %}>Pinterest Masonry (Randomized Short & Tall)</option>
+                                <option value="compact" {% if ts.frame_size == 'compact' %}selected{% endif %}>Compact Square (1:1)</option>
+                                <option value="tall" {% if ts.frame_size == 'tall' %}selected{% endif %}>Tall Vertical (2:3)</option>
+                                <option value="wide" {% if ts.frame_size == 'wide' %}selected{% endif %}>Wide Landscape (4:3)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-2">Artwork Columns</label>
+                            <select name="grid_cols" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-600">
+                                <option value="5" {% if ts.grid_cols == 5 %}selected{% endif %}>5 Columns (Dense Archive)</option>
+                                <option value="4" {% if ts.grid_cols == 4 %}selected{% endif %}>4 Columns (Balanced)</option>
+                                <option value="3" {% if ts.grid_cols == 3 %}selected{% endif %}>3 Columns (Large Feature)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-2">Artwork Painting Frame</label>
+                            <select name="art_frame_style" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-600">
+                                {% for f_key, f_val in frame_styles.items() %}
+                                <option value="{{ f_key }}" {% if ts.art_frame_style == f_key %}selected{% endif %}>{{ f_val.label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-2">Profile Picture Frame</label>
+                            <select name="avatar_frame_style" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-600">
+                                {% for f_key, f_val in frame_styles.items() %}
+                                <option value="{{ f_key }}" {% if ts.avatar_frame_style == f_key %}selected{% endif %}>{{ f_val.label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-2">Ambient Motion</label>
+                            <select name="animation" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-600">
+                                <option value="none" {% if ts.animation == 'none' %}selected{% endif %}>None (Static)</option>
+                                <option value="float" {% if ts.animation == 'float' %}selected{% endif %}>Gentle Frame Levitation</option>
+                                <option value="glow" {% if ts.animation == 'glow' %}selected{% endif %}>Hover Aura Glow</option>
+                                <option value="shimmer" {% if ts.animation == 'shimmer' %}selected{% endif %}>Chromatic Border Shimmer</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Custom Page Background (Picture, GIF, or MP4/WebM Loop <= 4 MB) -->
+                    <div class="p-4 sm:p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 space-y-4">
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 break-words">Custom Studio Background (Picture, GIF, or Lightweight MP4 Loop ≤ 4 MB)</h3>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 break-words">Upload a still image, animated GIF, or muted MP4/WebM loop (strictly capped at 4 MB so pages load fast and crisp). Cards automatically frost over busy backgrounds.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Upload Background File</label>
+                                <input id="bg-file-input" type="file" name="bg_file" accept=".jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm" class="w-full text-xs text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-600">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Or Image / GIF / MP4 URL (Blank to Clear)</label>
+                                <input type="text" name="bg_image_url" value="{{ ts.bg_image_url }}" placeholder="https://example.com/loop.mp4" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-indigo-600">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Background Display Style</label>
+                                <select name="bg_style" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2 text-xs font-bold focus:outline-none focus:border-indigo-600">
+                                    <option value="cover" {% if ts.bg_style == 'cover' %}selected{% endif %}>Full-Screen Cover (Fixed)</option>
+                                    <option value="repeat" {% if ts.bg_style == 'repeat' %}selected{% endif %}>Tiled Pattern / Pixel GIF</option>
+                                    <option value="contain" {% if ts.bg_style == 'contain' %}selected{% endif %}>Fit Within Screen</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom-Drawn Frame Overlays + Exact Canvas Specs -->
+                    <div class="p-4 sm:p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 space-y-5">
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 break-words">Custom-Drawn Frame Overlays (Transparent PNG / GIF)</h3>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 break-words">Draw your own frame decorations (like cat ears, halos, or custom borders) using these exact canvas dimensions so they line up automatically:</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 text-[11px] font-mono">
+                                <div class="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 break-words">
+                                    <span class="font-bold text-indigo-500 block">Classic Banner Avatar</span>
+                                    Canvas: <strong>200 × 170 px</strong><br>
+                                    Avatar Circle: 144 × 144 px (x: 28, y: 26)<br>
+                                    Top Headroom for Ears: 26 px
+                                </div>
+                                <div class="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 break-words">
+                                    <span class="font-bold text-indigo-500 block">Centered / Minimal Avatar</span>
+                                    Centered: <strong>144 × 132 px</strong> (base 112px)<br>
+                                    Minimal: <strong>84 × 76 px</strong> (base 64px)
+                                </div>
+                                <div class="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 break-words">
+                                    <span class="font-bold text-indigo-500 block">Artwork Frame Overlay</span>
+                                    Standard (4:5): <strong>800 × 1000 px</strong><br>
+                                    Square (1:1): <strong>800 × 800 px</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400">Profile Avatar Overlay (Upload PNG/GIF or Paste URL)</label>
+                                <input type="file" name="avatar_overlay_file" accept="image/png,image/webp,image/gif" class="w-full text-xs text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-600">
+                                <input type="text" name="custom_avatar_overlay_url" value="{{ ts.custom_avatar_overlay_url }}" placeholder="Or paste transparent PNG/GIF URL (leave blank to clear)" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-indigo-600">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400">Artwork Frame Overlay (Upload PNG/GIF or Paste URL)</label>
+                                <input type="file" name="art_overlay_file" accept="image/png,image/webp,image/gif" class="w-full text-xs text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-600">
+                                <input type="text" name="custom_art_overlay_url" value="{{ ts.custom_art_overlay_url }}" placeholder="Or paste transparent PNG/GIF URL (leave blank to clear)" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-indigo-600">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-zinc-100 dark:border-zinc-800 items-center">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400 mb-1">Optional Floating Page GIF URL</label>
+                            <input type="text" name="ambient_gif_url" value="{{ ts.ambient_gif_url }}" placeholder="https://example.com/sparkle.gif (Optional)" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-indigo-600">
+                        </div>
+
+                        <div class="flex items-center md:pt-4">
+                            <label class="inline-flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" name="show_cover" value="true" {% if ts.show_cover %}checked{% endif %} class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-xs font-bold">Display Cover Banner Photo</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Toyhouse-Style Custom CSS & Full HTML Override -->
+                <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-sm space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="min-w-0">
+                            <h2 class="text-lg sm:text-xl font-black uppercase tracking-wider break-words">3. Creator Code Studio (Custom CSS & HTML)</h2>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 break-words">Write custom CSS animations, cursors, GIF backgrounds—or enable full HTML layout override for custom community themes.</p>
+                        </div>
+                        <label class="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-900 cursor-pointer shrink-0">
+                            <input type="checkbox" name="custom_mode" value="true" x-model="customMode" class="w-4 h-4 rounded text-indigo-600">
+                            <span class="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Enable Full Custom HTML Mode</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
+                            <label class="text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400">Custom CSS & @keyframes Animations</label>
+                            <span class="text-[11px] font-mono text-zinc-400 break-words">Classes: .studio-body, .studio-card, .studio-avatar, .studio-avatar-overlay, .art-frame</span>
+                        </div>
+                        <textarea name="custom_css" rows="8" placeholder="/* Example: Add custom @keyframes, GIF backgrounds, cursors, or floating elements */
+.art-frame { transition: transform 0.4s ease; }
+.art-frame:hover { transform: scale(1.03) rotate(1deg); }" class="w-full font-mono text-xs bg-zinc-950 text-emerald-400 border border-zinc-800 rounded-xl p-4 focus:outline-none focus:border-indigo-500">{{ ts.custom_css }}</textarea>
+                    </div>
+
+                    <div x-show="customMode" class="space-y-3 pt-2 border-t border-zinc-200 dark:border-zinc-800" style="display: none;">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <label class="text-xs font-bold uppercase text-zinc-500 dark:text-zinc-400">Custom HTML Layout Template</label>
+                            <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
+                                <span class="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-indigo-500">{{ '{{brand_name}}' }}</span>
+                                <span class="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-indigo-500">{{ '{{bio}}' }}</span>
+                                <span class="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-indigo-500">{{ '{{avatar_url}}' }}</span>
+                                <span class="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-indigo-500">{{ '{{cover_url}}' }}</span>
+                                <span class="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-indigo-500">{{ '{{socials}}' }}</span>
+                                <span class="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-emerald-500">{{ '{{artworks}}' }}</span>
+                            </div>
+                        </div>
+                        <textarea name="custom_html" rows="12" placeholder="<div class='studio-card p-8 rounded-3xl text-center'>
+  <img src='{{avatar_url}}' class='studio-avatar w-24 h-24 rounded-full mx-auto mb-4'>
+  <h1 class='text-4xl font-black'>{{brand_name}}</h1>
+  <p class='opacity-75 mb-2'>{{bio}}</p>
+  {{socials}}
+  <div class='mt-8'>{{artworks}}</div>
+</div>" class="w-full font-mono text-xs bg-zinc-950 text-sky-300 border border-zinc-800 rounded-xl p-4 focus:outline-none focus:border-indigo-500">{{ ts.custom_html }}</textarea>
+                        <p class="text-[11px] text-zinc-400 break-words">Note: Use <code class="text-emerald-400">{{ '{{artworks}}' }}</code> wherever you want your protected gallery grid to render. <script> tags are automatically stripped for visitor safety.</p>
+                    </div>
+                </div>
+
+                <!-- Save Active Setup + Save as a Named Custom Theme -->
+                <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
+                        <input type="text" name="theme_name" x-model="themeNameInput" placeholder="Name this theme (e.g. Midnight Dragon)" class="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-indigo-600 sm:w-64">
+                        <button type="submit" formaction="/api/artist/theme/save-named" class="bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs hover:bg-emerald-500 transition shadow-sm cursor-pointer">Save & Add to My Themes</button>
+                    </div>
+
+                    <button type="submit" class="bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl text-sm hover:bg-indigo-500 transition shadow-sm cursor-pointer">Save Studio Theme & Code</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Theme Toggle, Video Size Check & Watermark Script -->
+    <script>
+        const htmlRoot = document.getElementById('html-root');
+        const toggleBtn = document.getElementById('theme-toggle');
+        const celestialBody = document.getElementById('celestial-body');
+
+        const sunSvg = `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5" fill="#D4AC0D"/><path d="M12 2V4M12 20V22M4 12H2M22 12H20M5.64 5.64L7.05 7.05M16.95 16.95L18.36 18.36M5.64 18.36L7.05 16.95M16.95 7.05L18.36 5.64" stroke="#D4AC0D" stroke-width="2" stroke-linecap="round"/></svg>`;
+        const moonSvg = `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#D4AC0D"/></svg>`;
+
+        function setTheme(isDark, animate = true) {
+            if (animate) {
+                celestialBody.style.transform = 'translateY(16px)';
+                celestialBody.style.opacity = '0';
+            }
+            setTimeout(() => {
+                if (isDark) {
+                    htmlRoot.classList.add('dark');
+                    localStorage.setItem('artistry_theme', 'dark');
+                    celestialBody.innerHTML = moonSvg;
+                } else {
+                    htmlRoot.classList.remove('dark');
+                    localStorage.setItem('artistry_theme', 'light');
+                    celestialBody.innerHTML = sunSvg;
+                }
+                if (animate) {
+                    celestialBody.style.transform = 'translateY(-16px)';
+                    requestAnimationFrame(() => {
+                        celestialBody.style.transform = 'translateY(0px)';
+                        celestialBody.style.opacity = '1';
+                    });
+                } else {
+                    celestialBody.style.transform = 'translateY(0px)';
+                    celestialBody.style.opacity = '1';
+                }
+            }, animate ? 200 : 0);
+        }
+
+        const savedTheme = localStorage.getItem('artistry_theme') || 'light';
+        setTheme(savedTheme === 'dark', false);
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const isCurrentlyDark = htmlRoot.classList.contains('dark');
+                setTheme(!isCurrentlyDark, true);
+            });
+        }
+
+        // Instant Client-Side 4 MB Check for MP4/WebM Studio Backgrounds
+        const bgFileInput = document.getElementById('bg-file-input');
+        if (bgFileInput) {
+            bgFileInput.addEventListener('change', () => {
+                const file = bgFileInput.files && bgFileInput.files[0];
+                if (!file) return;
+                const isVideo = file.type === 'video/mp4' || file.type === 'video/webm' || /\.(mp4|webm)$/i.test(file.name);
+                const maxBytes = 4 * 1024 * 1024;
+                if (isVideo && file.size > maxBytes) {
+                    alert(`That video is ${(file.size / (1024 * 1024)).toFixed(2)} MB. Background videos must be 4 MB or smaller so your studio loads fast and crisp.`);
+                    bgFileInput.value = '';
+                }
+            });
+        }
+
+        // Watermark Script (Skips GIFs so animated artworks stay animated)
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('img[data-watermark]').forEach(img => {
+                if (img.src.toLowerCase().endsWith('.gif')) return;
+                const updateImageWithWatermark = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || 600;
+                    canvas.height = img.naturalHeight || 600;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    ctx.font = 'bold ' + (canvas.width / 12) + 'px sans-serif';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                    ctx.textAlign = 'center';
+                    const text = "ARTISTRY";
+                    const stepX = canvas.width / 2.5;
+                    const stepY = canvas.height / 2.5;
+                    ctx.save();
+                    ctx.rotate(-20 * Math.PI / 180);
+                    for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
+                        for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
+                            ctx.fillText(text, x, y);
+                        }
+                    }
+                    ctx.restore();
+                    img.src = canvas.toDataURL('image/jpeg', 0.9);
+                };
+                if (img.complete) updateImageWithWatermark();
+                else img.onload = updateImageWithWatermark;
+            });
+        });
+    </script>
+</body>
+</html>

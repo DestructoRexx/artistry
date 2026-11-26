@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} | Artistry Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        if (localStorage.getItem('artistry_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <style>
+        .protected-artwork {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        .comment-bubble {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans min-h-screen transition-colors duration-500 overflow-x-hidden">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-zinc-200 dark:border-zinc-800 py-3 px-4 sm:px-8 flex justify-between items-center gap-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40">
+        <a href="/" class="text-base sm:text-xl font-black uppercase tracking-widest text-zinc-900 dark:text-white shrink-0">Artistry</a>
+
+        <nav aria-label="Primary navigation" class="flex items-center gap-1.5 sm:gap-3">
+            <!-- Home -->
+            <a href="/" title="Home" aria-label="Home" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9.5z" />
+                </svg>
+            </a>
+
+            <!-- Global Gallery (Paint Palette Icon) -->
+            <a href="/gallery" title="Global Gallery" aria-label="Global Gallery" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3a9 9 0 00-9 9 9 9 0 009 9 2.25 2.25 0 002.25-2.25c0-.6-.24-1.17-.66-1.59a2.25 2.25 0 011.59-3.84H17.5A3.5 3.5 0 0021 9.82 6.82 6.82 0 0012 3z" />
+                    <circle cx="8.5" cy="10.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="15.5" cy="9.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="8" cy="14.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+            </a>
+
+            <!-- Artists Directory (Three-Person Group Icon) -->
+            <a href="/artists" title="Artists Directory" aria-label="Artists Directory" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="7" r="2.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 18.5v-1a4.5 4.5 0 019 0v1" />
+                    <circle cx="5.5" cy="8.5" r="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2 18.5v-.8a3.5 3.5 0 013.5-3.5" />
+                    <circle cx="18.5" cy="8.5" r="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M22 18.5v-.8a3.5 3.5 0 00-3.5-3.5" />
+                </svg>
+            </a>
+
+            {% if user %}
+                {% if user.role == 'artist' %}
+                <!-- Studio -->
+                <a href="/studio/{{ user.tenant_slug }}" title="Studio" aria-label="Studio" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </a>
+                {% endif %}
+                <!-- Logout -->
+                <a href="/logout" title="Logout" aria-label="Logout" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1" />
+                    </svg>
+                </a>
+            {% else %}
+                <!-- Login -->
+                <a href="/login" title="Login" aria-label="Login" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+                    </svg>
+                </a>
+                <!-- Sign Up -->
+                <a href="/signup" title="Sign Up" aria-label="Sign Up" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 8v6m3-3h-6" />
+                    </svg>
+                </a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- Main Exhibition Showcase -->
+    <main class="max-w-5xl mx-auto py-6 sm:py-12 px-3 sm:px-4 space-y-6 sm:space-y-8 min-w-0">
+        <div>
+            <a href="/gallery" class="text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition">← Back to Gallery</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-4 sm:p-8 shadow-sm min-w-0">
+            
+            <!-- Artwork Image Preview (Moderated Size for Crispness) -->
+            <div class="h-60 sm:h-80 md:h-[360px] bg-zinc-100 dark:bg-zinc-950 rounded-2xl overflow-hidden relative shadow-inner min-w-0 flex items-center justify-center p-2 sm:p-3" oncontextmenu="return false;">
+                <img {% if not product.is_gif %}data-watermark{% endif %} src="{{ product.image_url }}" alt="{{ product.name }}" class="max-w-full max-h-full w-auto h-auto object-contain rounded-xl protected-artwork" crossorigin="anonymous">
+                {% if product.is_gif %}
+                <div class="absolute inset-0 z-10 flex items-center justify-center opacity-25 pointer-events-none">
+                    <span class="text-white font-black tracking-widest text-lg sm:text-xl -rotate-12">ARTISTRY</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Artwork Metadata & Artist Link -->
+            <div class="space-y-5 sm:space-y-6 min-w-0">
+                <div class="min-w-0">
+                    <span class="inline-block px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-bold rounded-full border border-zinc-200 dark:border-zinc-700 uppercase tracking-wider mb-3">Exhibition Piece</span>
+                    <h1 class="text-2xl sm:text-4xl font-black text-zinc-900 dark:text-white tracking-tight break-words">{{ product.name }}</h1>
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-2 break-words">
+                        Created by <a href="/site/{{ product.artist_slug }}" class="font-bold text-zinc-900 dark:text-white hover:underline break-words">{{ product.artist_name }}</a>
+                    </p>
+                </div>
+
+                <div class="pt-1 sm:pt-2">
+                    <span class="block text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1">Listed Valuation</span>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white break-words">
+                        R {{ "%.2f"|format(product.list_price) }}
+                    </div>
+                </div>
+
+                <div class="border-t border-zinc-100 dark:border-zinc-800 pt-5 sm:pt-6 space-y-4">
+                    <p class="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 break-words">
+                        Original digital artwork curated on Artistry. Public previews are watermarked to protect the creator's intellectual property.
+                    </p>
+                    <a href="/site/{{ product.artist_slug }}" class="inline-block px-5 sm:px-6 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold rounded-xl text-xs uppercase tracking-wider transition">
+                        Explore Artist Studio →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Post Discussion / Nested Comments Section -->
+        <section id="comments" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-4 sm:p-8 shadow-sm space-y-6 min-w-0">
+            <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4 gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <h2 class="text-base font-black uppercase tracking-wider">Comments</h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 shrink-0">{{ total_comments }}</span>
+                </div>
+                <span class="text-[11px] text-zinc-400 hidden sm:inline">Hold or click ••• on a comment for options</span>
+            </div>
+
+            <!-- Main Comment Composer (Logged-In Users Only) -->
+            {% if user %}
+            <form action="/api/product/{{ product.id }}/comments" method="post" class="flex items-start gap-2.5 sm:gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 font-black text-xs flex items-center justify-center flex-shrink-0 uppercase">
+                    {{ user.email[0] }}
+                </div>
+                <div class="flex-1 flex flex-col sm:flex-row gap-2.5 min-w-0">
+                    <textarea name="body" rows="2" maxlength="1000" required placeholder="Write a comment on {{ product.name }}..." class="flex-1 min-w-0 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500 resize-none"></textarea>
+                    <button type="submit" class="sm:self-end px-5 py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 font-bold rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shrink-0">
+                        Post
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 break-words">Log in as an artist or collector to join the conversation and reply to comments.</p>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <a href="/login" class="px-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-bold hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">Login</a>
+                    <a href="/signup" class="px-4 py-2 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 text-xs font-bold hover:opacity-90 transition">Sign Up</a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Comments Feed -->
+            {% if comment_threads and comment_threads|length > 0 %}
+            <div class="space-y-5 pt-2">
+                {% for comment in comment_threads %}
+                <div id="comment-{{ comment.id }}"
+                     x-data="{
+                         menuOpen: false,
+                         confirmDelete: false,
+                         replyOpen: false,
+                         pressTimer: null,
+                         startPress() {
+                             this.pressTimer = setTimeout(() => {
+                                 this.menuOpen = true;
+                                 this.confirmDelete = false;
+                                 if (navigator.vibrate) navigator.vibrate(15);
+                             }, 450);
+                         },
+                         cancelPress() {
+                             clearTimeout(this.pressTimer);
+                         }
+                     }"
+                     class="group/comment min-w-0">
+
+                    <!-- Parent Comment Row -->
+                    <div class="flex items-start gap-2.5 sm:gap-3 min-w-0">
+                        {% if comment.author_avatar %}
+                        <a href="/site/{{ comment.author_slug }}" class="w-9 h-9 rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800 flex-shrink-0 mt-0.5">
+                            <img src="{{ comment.author_avatar }}" alt="{{ comment.author_name }}" class="w-full h-full object-cover">
+                        </a>
+                        {% else %}
+                        <div class="w-9 h-9 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 font-black text-xs flex items-center justify-center flex-shrink-0 uppercase mt-0.5">
+                            {{ comment.author_name[0] }}
+                        </div>
+                        {% endif %}
+
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start gap-1.5 min-w-0">
+                                <!-- Comment Bubble (Supports Long-Press on Touchscreens) -->
+                                <div @touchstart.passive="startPress()"
+                                     @touchend="cancelPress()"
+                                     @touchmove="cancelPress()"
+                                     @contextmenu.prevent="menuOpen = !menuOpen; confirmDelete = false;"
+                                     class="comment-bubble bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/70 dark:border-zinc-800 rounded-2xl px-3.5 sm:px-4 py-2.5 max-w-full min-w-0 transition active:scale-[0.99]">
+                                    <div class="flex items-center gap-2 flex-wrap min-w-0">
+                                        {% if comment.author_role == 'artist' and comment.author_slug %}
+                                        <a href="/site/{{ comment.author_slug }}" class="text-xs font-black text-zinc-900 dark:text-white hover:underline break-words">{{ comment.author_name }}</a>
+                                        {% else %}
+                                        <span class="text-xs font-black text-zinc-900 dark:text-white break-words">{{ comment.author_name }}</span>
+                                        {% endif %}
+
+                                        {% if comment.is_post_author %}
+                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-zinc-900 dark:bg-white text-white dark:text-zinc-950">Creator</span>
+                                        {% elif comment.author_role == 'artist' %}
+                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">Artist</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-sm text-zinc-800 dark:text-zinc-200 mt-1 whitespace-pre-line break-words">{{ comment.body }}</p>
+                                </div>
+
+                                <!-- Discreet Three-Dots Action Trigger (Hidden until hover/focus or long-press) -->
+                                {% if user %}
+                                <div class="relative flex-shrink-0 mt-1" @click.away="menuOpen = false; confirmDelete = false;">
+                                    <button type="button"
+                                            @click="menuOpen = !menuOpen; confirmDelete = false;"
+                                            aria-label="Comment options"
+                                            class="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 opacity-60 sm:opacity-0 sm:group-hover/comment:opacity-100 focus:opacity-100 transition cursor-pointer"
+                                            :class="menuOpen ? '!opacity-100 bg-zinc-100 dark:bg-zinc-800' : ''">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zm6 0a2 2 0 11-4 0 2 2 0 014 0zm6 0a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    </button>
+
+                                    <div x-show="menuOpen"
+                                         x-transition
+                                         style="display: none;"
+                                         class="absolute right-0 mt-1 w-40 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl py-1 z-30">
+                                        <button type="button"
+                                                @click="replyOpen = true; menuOpen = false; confirmDelete = false; $nextTick(() => $refs.replyInput.focus())"
+                                                class="w-full text-left px-3.5 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer">
+                                            Reply
+                                        </button>
+                                        {% if comment.can_delete %}
+                                        <button type="button"
+                                                x-show="!confirmDelete"
+                                                @click="confirmDelete = true"
+                                                class="w-full text-left px-3.5 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer">
+                                            Delete
+                                        </button>
+                                        <div x-show="confirmDelete" style="display: none;" class="px-2.5 py-1.5 space-y-1.5 border-t border-zinc-100 dark:border-zinc-800">
+                                            <p class="text-[11px] font-bold text-rose-600 dark:text-rose-400">Delete comment?</p>
+                                            <div class="flex items-center gap-1.5">
+                                                <form action="/api/product/{{ product.id }}/comments/{{ comment.id }}/delete" method="post" class="flex-1">
+                                                    <button type="submit" class="w-full py-1.5 px-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold transition cursor-pointer">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                                <button type="button"
+                                                        @click="confirmDelete = false; menuOpen = false"
+                                                        class="py-1.5 px-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[11px] font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Metadata & Quick Reply Trigger -->
+                            <div class="flex items-center gap-4 mt-1 px-2 text-[11px] font-bold text-zinc-400">
+                                <span>{{ comment.time_ago }}</span>
+                                {% if user %}
+                                <button type="button" @click="replyOpen = !replyOpen; if (replyOpen) $nextTick(() => $refs.replyInput.focus())" class="hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">Reply</button>
+                                {% endif %}
+                            </div>
+
+                            <!-- Inline Nested Reply Composer -->
+                            {% if user %}
+                            <form x-show="replyOpen"
+                                  style="display: none;"
+                                  action="/api/product/{{ product.id }}/comments"
+                                  method="post"
+                                  class="mt-3 flex flex-wrap sm:flex-nowrap items-center gap-2 max-w-lg min-w-0">
+                                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                <input type="hidden" name="reply_to_name" value="{{ comment.author_name }}">
+                                <input x-ref="replyInput" type="text" name="body" maxlength="1000" required placeholder="Reply to {{ comment.author_name }}..." class="flex-1 min-w-0 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-zinc-500">
+                                <button type="submit" class="px-3.5 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 font-bold rounded-xl text-xs transition cursor-pointer shrink-0">Send</button>
+                                <button type="button" @click="replyOpen = false" class="px-2.5 py-2 text-xs text-zinc-400 hover:text-zinc-600 cursor-pointer shrink-0">Cancel</button>
+                            </form>
+                            {% endif %}
+
+                            <!-- Nested Replies Thread -->
+                            {% if comment.replies and comment.replies|length > 0 %}
+                            <div class="mt-3 pl-2.5 sm:pl-4 border-l-2 border-zinc-200 dark:border-zinc-800 space-y-3 min-w-0">
+                                {% for reply in comment.replies %}
+                                <div id="comment-{{ reply.id }}"
+                                     x-data="{
+                                         rMenuOpen: false,
+                                         rConfirmDelete: false,
+                                         rReplyOpen: false,
+                                         rTimer: null,
+                                         startRPress() {
+                                             this.rTimer = setTimeout(() => {
+                                                 this.rMenuOpen = true;
+                                                 this.rConfirmDelete = false;
+                                                 if (navigator.vibrate) navigator.vibrate(15);
+                                             }, 450);
+                                         },
+                                         cancelRPress() {
+                                             clearTimeout(this.rTimer);
+                                         }
+                                     }"
+                                     class="group/reply min-w-0">
+
+                                    <div class="flex items-start gap-2 sm:gap-2.5 min-w-0">
+                                        {% if reply.author_avatar %}
+                                        <a href="/site/{{ reply.author_slug }}" class="w-7 h-7 rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800 flex-shrink-0 mt-0.5">
+                                            <img src="{{ reply.author_avatar }}" alt="{{ reply.author_name }}" class="w-full h-full object-cover">
+                                        </a>
+                                        {% else %}
+                                        <div class="w-7 h-7 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 font-black text-[10px] flex items-center justify-center flex-shrink-0 uppercase mt-0.5">
+                                            {{ reply.author_name[0] }}
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-start gap-1.5 min-w-0">
+                                                <div @touchstart.passive="startRPress()"
+                                                     @touchend="cancelRPress()"
+                                                     @touchmove="cancelRPress()"
+                                                     @contextmenu.prevent="rMenuOpen = !rMenuOpen; rConfirmDelete = false;"
+                                                     class="comment-bubble bg-zinc-100/80 dark:bg-zinc-950/90 border border-zinc-200/60 dark:border-zinc-800/90 rounded-2xl px-3 sm:px-3.5 py-2 max-w-full min-w-0 transition active:scale-[0.99]">
+                                                    <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+                                                        {% if reply.author_role == 'artist' and reply.author_slug %}
+                                                        <a href="/site/{{ reply.author_slug }}" class="text-xs font-black text-zinc-900 dark:text-white hover:underline break-words">{{ reply.author_name }}</a>
+                                                        {% else %}
+                                                        <span class="text-xs font-black text-zinc-900 dark:text-white break-words">{{ reply.author_name }}</span>
+                                                        {% endif %}
+
+                                                        {% if reply.is_post_author %}
+                                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-zinc-900 dark:bg-white text-white dark:text-zinc-950">Creator</span>
+                                                        {% elif reply.author_role == 'artist' %}
+                                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">Artist</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <p class="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 mt-0.5 whitespace-pre-line break-words">
+                                                        {% if reply.reply_to_name and reply.reply_to_name != comment.author_name %}<span class="font-bold text-zinc-900 dark:text-white">@{{ reply.reply_to_name }}</span> {% endif %}{{ reply.body }}
+                                                    </p>
+                                                </div>
+
+                                                {% if user %}
+                                                <div class="relative flex-shrink-0 mt-1" @click.away="rMenuOpen = false; rConfirmDelete = false;">
+                                                    <button type="button"
+                                                            @click="rMenuOpen = !rMenuOpen; rConfirmDelete = false;"
+                                                            aria-label="Reply options"
+                                                            class="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 opacity-60 sm:opacity-0 sm:group-hover/reply:opacity-100 focus:opacity-100 transition cursor-pointer"
+                                                            :class="rMenuOpen ? '!opacity-100 bg-zinc-100 dark:bg-zinc-800' : ''">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zm6 0a2 2 0 11-4 0 2 2 0 014 0zm6 0a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                                    </button>
+
+                                                    <div x-show="rMenuOpen"
+                                                         x-transition
+                                                         style="display: none;"
+                                                         class="absolute right-0 mt-1 w-40 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl py-1 z-30">
+                                                        <button type="button"
+                                                                @click="rReplyOpen = true; rMenuOpen = false; rConfirmDelete = false; $nextTick(() => $refs.nestedReplyInput.focus())"
+                                                                class="w-full text-left px-3.5 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer">
+                                                            Reply
+                                                        </button>
+                                                        {% if reply.can_delete %}
+                                                        <button type="button"
+                                                                x-show="!rConfirmDelete"
+                                                                @click="rConfirmDelete = true"
+                                                                class="w-full text-left px-3.5 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer">
+                                                            Delete
+                                                        </button>
+                                                        <div x-show="rConfirmDelete" style="display: none;" class="px-2.5 py-1.5 space-y-1.5 border-t border-zinc-100 dark:border-zinc-800">
+                                                            <p class="text-[11px] font-bold text-rose-600 dark:text-rose-400">Delete reply?</p>
+                                                            <div class="flex items-center gap-1.5">
+                                                                <form action="/api/product/{{ product.id }}/comments/{{ reply.id }}/delete" method="post" class="flex-1">
+                                                                    <button type="submit" class="w-full py-1.5 px-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold transition cursor-pointer">
+                                                                        Delete
+                                                                    </button>
+                                                                </form>
+                                                                <button type="button"
+                                                                        @click="rConfirmDelete = false; rMenuOpen = false"
+                                                                        class="py-1.5 px-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[11px] font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer">
+                                                                    Cancel
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="flex items-center gap-4 mt-1 px-2 text-[11px] font-bold text-zinc-400">
+                                                <span>{{ reply.time_ago }}</span>
+                                                {% if user %}
+                                                <button type="button" @click="rReplyOpen = !rReplyOpen; if (rReplyOpen) $nextTick(() => $refs.nestedReplyInput.focus())" class="hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">Reply</button>
+                                                {% endif %}
+                                            </div>
+
+                                            {% if user %}
+                                            <form x-show="rReplyOpen"
+                                                  style="display: none;"
+                                                  action="/api/product/{{ product.id }}/comments"
+                                                  method="post"
+                                                  class="mt-2 flex flex-wrap sm:flex-nowrap items-center gap-2 max-w-md min-w-0">
+                                                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                                <input type="hidden" name="reply_to_name" value="{{ reply.author_name }}">
+                                                <input x-ref="nestedReplyInput" type="text" name="body" maxlength="1000" required placeholder="Reply to {{ reply.author_name }}..." class="flex-1 min-w-0 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-zinc-500">
+                                                <button type="submit" class="px-3 py-1.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 font-bold rounded-xl text-xs transition cursor-pointer shrink-0">Send</button>
+                                                <button type="button" @click="rReplyOpen = false" class="px-2 py-1.5 text-xs text-zinc-400 hover:text-zinc-600 cursor-pointer shrink-0">Cancel</button>
+                                            </form>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-zinc-400">
+                <p class="text-xs">No comments yet. Be the first to share your thoughts on this piece!</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <!-- Watermark Script (Skips GIFs so animated artworks stay animated) -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('img[data-watermark]').forEach(img => {
+                if (img.src.toLowerCase().endsWith('.gif')) return;
+                const updateImageWithWatermark = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || 600;
+                    canvas.height = img.naturalHeight || 600;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    ctx.font = 'bold ' + (canvas.width / 12) + 'px sans-serif';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                    ctx.textAlign = 'center';
+                    const text = "ARTISTRY";
+                    const stepX = canvas.width / 2.5;
+                    const stepY = canvas.height / 2.5;
+                    ctx.save();
+                    ctx.rotate(-20 * Math.PI / 180);
+                    for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
+                        for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
+                            ctx.fillText(text, x, y);
+                        }
+                    }
+                    ctx.restore();
+                    img.src = canvas.toDataURL('image/jpeg', 0.9);
+                };
+                if (img.complete) updateImageWithWatermark();
+                else img.onload = updateImageWithWatermark;
+            });
+        });
+    </script>
+</body>
+</html>
+```[cite: 2, 3, 4, 5]
+
+Open a product detail page (`/product/1` or any active artwork) on desktop and mobile to confirm the image sits cleanly inside its smaller frame without cropping or looking oversized[cite: 2]. Let me know if you want that frame slightly taller or shorter before shipping today!

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artists Directory | Artistry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        if (localStorage.getItem('artistry_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <style>
+        .celestial-icon-container {
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans min-h-screen transition-colors duration-500">
+<!-- Header / Navbar -->
+    <header class="border-b border-zinc-200 dark:border-zinc-800 py-3 px-4 sm:px-8 flex justify-between items-center gap-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40">
+        <a href="/" class="text-base sm:text-xl font-black uppercase tracking-widest text-zinc-900 dark:text-white shrink-0">Artistry</a>
+
+        <nav aria-label="Primary navigation" class="flex items-center gap-1 sm:gap-2.5">
+            <!-- Home -->
+            <a href="/" title="Home" aria-label="Home" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9.5z" />
+                </svg>
+            </a>
+
+            <!-- Global Gallery (Monochrome Paint Palette) -->
+            <a href="/gallery" title="Global Gallery" aria-label="Global Gallery" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3a9 9 0 00-9 9 9 9 0 009 9 2.25 2.25 0 002.25-2.25c0-.6-.24-1.17-.66-1.59a2.25 2.25 0 011.59-3.84H17.5A3.5 3.5 0 0021 9.82 6.82 6.82 0 0012 3z" />
+                    <circle cx="8.5" cy="10.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="15.5" cy="9.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="8" cy="14.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+            </a>
+
+            <!-- Artists Directory (Monochrome 3-Person Group Busts) -->
+            <a href="/artists" title="Artists Directory" aria-label="Artists Directory" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="7" r="2.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 18.5v-1a4.5 4.5 0 019 0v1" />
+                    <circle cx="5.5" cy="8.5" r="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2 18.5v-.8a3.5 3.5 0 013.5-3.5" />
+                    <circle cx="18.5" cy="8.5" r="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M22 18.5v-.8a3.5 3.5 0 00-3.5-3.5" />
+                </svg>
+            </a>
+
+            {% if user %}
+                {% if user.role == 'artist' %}
+                <!-- Studio -->
+                <a href="/studio/{{ user.tenant_slug }}" title="Studio" aria-label="Studio" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </a>
+                {% endif %}
+                <!-- Logout -->
+                <a href="/logout" title="Logout" aria-label="Logout" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1" />
+                    </svg>
+                </a>
+            {% else %}
+                <!-- Login -->
+                <a href="/login" title="Login" aria-label="Login" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+                    </svg>
+                </a>
+                <!-- Sign Up -->
+                <a href="/signup" title="Sign Up" aria-label="Sign Up" class="p-2 rounded-xl text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 8v6m3-3h-6" />
+                    </svg>
+                </a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <h2 class="text-4xl font-black uppercase tracking-tight mb-4">Featured Creators</h2>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-12">Explore independent artist portfolios and custom storefronts hosted on Artistry.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {% for artist in artists %}
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300">
+                <div>
+                    <a href="/site/{{ artist.slug }}" class="block group">
+                        <div class="w-16 h-16 rounded-full bg-indigo-600 text-white flex items-center justify-center text-2xl font-black mb-6 overflow-hidden border border-zinc-200 dark:border-zinc-800 group-hover:scale-105 transition duration-300">
+                            {% if artist.avatar_url and 'default' not in artist.avatar_url %}
+                            <img src="{{ artist.avatar_url }}" alt="{{ artist.name }}" class="w-full h-full object-cover">
+                            {% else %}
+                            {{ artist.name[0]|upper }}
+                            {% endif %}
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">{{ artist.name }}</h3>
+                    </a>
+                    <p class="text-zinc-600 dark:text-zinc-400 mb-6 text-sm line-clamp-2">{{ artist.bio }}</p>
+                </div>
+                <a href="/site/{{ artist.slug }}" class="block text-center w-full py-3 bg-zinc-900 dark:bg-zinc-800 text-white rounded-xl font-bold hover:bg-zinc-800 dark:hover:bg-zinc-700 transition">Visit Studio Profile</a>
+            </div>
+            {% else %}
+            <div class="col-span-3 text-center py-20 text-zinc-400">
+                <p class="text-lg">No artist portfolios created yet. Sign in as an artist to set up your studio!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const htmlRoot = document.getElementById('html-root');
+        const toggleBtn = document.getElementById('theme-toggle');
+        const celestialBody = document.getElementById('celestial-body');
+
+        const sunSvg = `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5" fill="#D4AC0D"/><path d="M12 2V4M12 20V22M4 12H2M22 12H20M5.64 5.64L7.05 7.05M16.95 16.95L18.36 18.36M5.64 18.36L7.05 16.95M16.95 7.05L18.36 5.64" stroke="#D4AC0D" stroke-width="2" stroke-linecap="round"/></svg>`;
+        const moonSvg = `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#D4AC0D"/></svg>`;
+
+        function setTheme(isDark, animate = true) {
+            if (animate) {
+                celestialBody.style.transform = 'translateY(16px)';
+                celestialBody.style.opacity = '0';
+            }
+            setTimeout(() => {
+                if (isDark) {
+                    htmlRoot.classList.add('dark');
+                    localStorage.setItem('artistry_theme', 'dark');
+                    celestialBody.innerHTML = moonSvg;
+                } else {
+                    htmlRoot.classList.remove('dark');
+                    localStorage.setItem('artistry_theme', 'light');
+                    celestialBody.innerHTML = sunSvg;
+                }
+                if (animate) {
+                    celestialBody.style.transform = 'translateY(-16px)';
+                    requestAnimationFrame(() => {
+                        celestialBody.style.transform = 'translateY(0px)';
+                        celestialBody.style.opacity = '1';
+                    });
+                } else {
+                    celestialBody.style.transform = 'translateY(0px)';
+                    celestialBody.style.opacity = '1';
+                }
+            }, animate ? 200 : 0);
+        }
+
+        const savedTheme = localStorage.getItem('artistry_theme') || 'light';
+        setTheme(savedTheme === 'dark', false);
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const isCurrentlyDark = htmlRoot.classList.contains('dark');
+                setTheme(!isCurrentlyDark, true);
+            });
+        }
+    </script>
+</body>
+</html>

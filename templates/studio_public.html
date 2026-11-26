@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.brand_name }} | Studio Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .protected-artwork {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        /* Active Preset Theme */
+        {{ preset.css | safe }}
+        /* Ambient Animation Preset */
+        {{ anim_css | safe }}
+        /* Gallery Frame Styles (Artworks & Avatar) */
+        {{ art_frame_css | safe }}
+        {{ avatar_frame_css | safe }}
+        /* Artist / Coder Custom CSS Overrides */
+        {{ config.theme_settings.custom_css | safe }}
+
+        {% if config.theme_settings.bg_image_url %}
+            {% if not is_bg_video %}
+            body.studio-body {
+                background-image: url("{{ config.theme_settings.bg_image_url | e }}") !important;
+                background-attachment: fixed !important;
+                {% if config.theme_settings.bg_style == 'repeat' %}
+                background-repeat: repeat !important;
+                background-size: auto !important;
+                {% elif config.theme_settings.bg_style == 'contain' %}
+                background-repeat: no-repeat !important;
+                background-size: contain !important;
+                background-position: center !important;
+                {% else %}
+                background-repeat: no-repeat !important;
+                background-size: cover !important;
+                background-position: center !important;
+                {% endif %}
+            }
+            {% endif %}
+        /* Semi-transparent frosted glass cards so text stays crisp over custom images/GIFs/videos */
+        .studio-card {
+            backdrop-filter: blur(14px) saturate(140%) !important;
+            -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
+            background-color: color-mix(in srgb, currentColor 6%, transparent) !important;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18) !important;
+        }
+        .studio-catalog-label {
+            display: inline-block;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background-color: color-mix(in srgb, currentColor 10%, transparent);
+        }
+        {% endif %}
+    </style>
+</head>
+<body class="studio-body min-h-screen transition-colors duration-500 relative overflow-x-hidden">
+    {% set ts = config.theme_settings %}
+    {% set socials = config.socials or {} %}
+
+    <!-- Fixed Auto-Looping Background Video (<= 4 MB MP4/WebM) -->
+    {% if ts.bg_image_url and is_bg_video %}
+    <video autoplay loop muted playsinline aria-hidden="true"
+           class="fixed inset-0 w-full h-full pointer-events-none z-0 {% if ts.bg_style == 'contain' %}object-contain{% else %}object-cover{% endif %}">
+        <source src="{{ ts.bg_image_url }}">
+    </video>
+    {% endif %}
+
+    <div class="studio-particles"></div>
+
+    <!-- Optional Floating Ambient GIF Overlay -->
+    {% if ts.ambient_gif_url %}
+    <img src="{{ ts.ambient_gif_url }}" alt="" aria-hidden="true" class="studio-ambient-gif fixed bottom-6 right-6 w-24 h-24 object-contain pointer-events-none z-40 opacity-90">
+    {% endif %}
+
+    <!-- Platform Navigation Bar -->
+    <header class="border-b border-current/10 py-3 px-4 sm:px-8 flex justify-between items-center gap-2 backdrop-blur-md sticky top-0 z-50">
+        <a href="/" class="text-base sm:text-lg font-black uppercase tracking-widest studio-accent shrink-0">Artistry</a>
+
+        <nav aria-label="Primary navigation" class="flex items-center gap-1 sm:gap-2.5">
+            <!-- Home -->
+            <a href="/" title="Home" aria-label="Home" class="p-2 rounded-xl hover:bg-current/10 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9.5z" />
+                </svg>
+            </a>
+
+            <!-- Global Gallery (Monochrome Paint Palette) -->
+            <a href="/gallery" title="Global Gallery" aria-label="Global Gallery" class="p-2 rounded-xl hover:bg-current/10 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3a9 9 0 00-9 9 9 9 0 009 9 2.25 2.25 0 002.25-2.25c0-.6-.24-1.17-.66-1.59a2.25 2.25 0 011.59-3.84H17.5A3.5 3.5 0 0021 9.82 6.82 6.82 0 0012 3z" />
+                    <circle cx="8.5" cy="10.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="15.5" cy="9.5" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="8" cy="14.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+            </a>
+
+            <!-- Artists Directory (Monochrome 3-Person Group Busts) -->
+            <a href="/artists" title="Artists Directory" aria-label="Artists Directory" class="p-2 rounded-xl hover:bg-current/10 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="7" r="2.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 18.5v-1a4.5 4.5 0 019 0v1" />
+                    <circle cx="5.5" cy="8.5" r="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2 18.5v-.8a3.5 3.5 0 013.5-3.5" />
+                    <circle cx="18.5" cy="8.5" r="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M22 18.5v-.8a3.5 3.5 0 00-3.5-3.5" />
+                </svg>
+            </a>
+
+            {% if user %}
+                {% if user.role == 'artist' %}
+                <!-- My Studio -->
+                <a href="/studio/{{ user.tenant_slug }}" title="My Studio" aria-label="My Studio" class="p-2 rounded-xl studio-accent hover:bg-current/10 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </a>
+                {% endif %}
+                <!-- Logout -->
+                <a href="/logout" title="Logout" aria-label="Logout" class="p-2 rounded-xl hover:bg-current/10 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1" />
+                    </svg>
+                </a>
+            {% else %}
+                <!-- Login -->
+                <a href="/login" title="Login" aria-label="Login" class="p-2 rounded-xl hover:bg-current/10 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+                    </svg>
+                </a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- Reusable Compact Emoji-Sized Social Icons Strip -->
+    {% set socials_markup %}
+        {% set has_socials = socials.instagram or socials.twitter or socials.tiktok or socials.youtube or socials.artstation or socials.discord or socials.website %}
+        {% if has_socials %}
+        <div class="studio-socials inline-flex items-center gap-2.5 mt-2.5 flex-wrap max-w-full">
+            {% if socials.instagram %}
+            <a href="{{ socials.instagram }}" target="_blank" rel="noopener noreferrer" title="Instagram" class="opacity-80 hover:opacity-100 hover:scale-110 transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            {% endif %}
+            {% if socials.twitter %}
+            <a href="{{ socials.twitter }}" target="_blank" rel="noopener noreferrer" title="X / Twitter" class="opacity-80 hover:opacity-100 hover:scale-110 transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            {% endif %}
+            {% if socials.tiktok %}
+            <a href="{{ socials.tiktok }}" target="_blank" rel="noopener noreferrer" title="TikTok" class="opacity-80 hover:opacity-100 hover:scale-110 transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+            </a>
+            {% endif %}
+            {% if socials.youtube %}
+            <a href="{{ socials.youtube }}" target="_blank" rel="noopener noreferrer" title="YouTube" class="opacity-80 hover:opacity-100 hover:scale-110 transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            {% endif %}
+            {% if socials.artstation %}
+            <a href="{{ socials.artstation }}" target="_blank" rel="noopener noreferrer" title="Portfolio / ArtStation" class="opacity-80 hover:opacity-100 hover:scale-110 transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M0 17.723l2.027 3.505h.001a2.424 2.424 0 0 0 2.164 1.333h13.457l-2.792-4.838H0zm24 .025c0-.484-.143-.935-.388-1.314L15.728 2.728a2.424 2.424 0 0 0-2.142-1.289H9.419L21.598 22.54l1.92-3.325c.378-.637.482-.919.482-1.467zm-11.129-3.462L7.428 4.858l-5.444 9.428h10.887z"/></svg>
+            </a>
+            {% endif %}
+            {% if socials.discord %}
+            <span title="Discord: {{ socials.discord }}" class="inline-flex items-center gap-1 opacity-80 hover:opacity-100 transition cursor-default break-all">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                <span class="text-[11px] font-mono break-all">{{ socials.discord }}</span>
+            </span>
+            {% endif %}
+            {% if socials.website %}
+            <a href="{{ socials.website }}" target="_blank" rel="noopener noreferrer" title="Website / Link" class="opacity-80 hover:opacity-100 hover:scale-110 transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endset %}
+
+    <!-- Reusable Protected Artworks Grid / Pinterest Masonry Markup -->
+    {% set grid_class = "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" %}
+    {% if ts.grid_cols == 3 %}{% set grid_class = "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" %}{% endif %}
+    {% if ts.grid_cols == 4 %}{% set grid_class = "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4" %}{% endif %}
+
+    {% set masonry_cols = "columns-2 sm:columns-3 md:columns-4 lg:columns-5" %}
+    {% if ts.grid_cols == 3 %}{% set masonry_cols = "columns-1 sm:columns-2 lg:columns-3" %}{% endif %}
+    {% if ts.grid_cols == 4 %}{% set masonry_cols = "columns-2 sm:columns-3 lg:columns-4" %}{% endif %}
+
+    {% set aspect_class = "aspect-[4/5]" %}
+    {% if ts.frame_size == 'compact' %}{% set aspect_class = "aspect-square" %}{% endif %}
+    {% if ts.frame_size == 'tall' %}{% set aspect_class = "aspect-[2/3]" %}{% endif %}
+    {% if ts.frame_size == 'wide' %}{% set aspect_class = "aspect-[4/3]" %}{% endif %}
+
+    {% set artworks_markup %}
+        {% if products and products|length > 0 %}
+            {% if is_pinterest %}
+            <div class="studio-grid {{ masonry_cols }} gap-4 space-y-4">
+                {% for p in products %}
+                <a href="/product/{{ p.id }}" 
+                   oncontextmenu="return false;" 
+                   ondragstart="return false;"
+                   class="art-frame group block break-inside-avoid mb-4 relative {{ p.masonry_height }} rounded-xl overflow-hidden shadow-sm border border-current/10 select-none">
+                    <img {% if not p.is_gif %}data-watermark{% endif %} src="{{ p.image_url }}" alt="{{ p.name }}" draggable="false" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out protected-artwork" crossorigin="anonymous">
+                    {% if ts.custom_art_overlay_url %}
+                    <img src="{{ ts.custom_art_overlay_url }}" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-fill pointer-events-none z-20">
+                    {% endif %}
+                    {% if p.is_gif %}
+                    <div class="absolute inset-0 z-10 flex items-center justify-center opacity-25 pointer-events-none">
+                        <span class="text-white font-black tracking-widest text-lg -rotate-12">ARTISTRY</span>
+                    </div>
+                    {% else %}
+                    <div class="absolute inset-0 z-10"></div>
+                    {% endif %}
+                    <div class="studio-badge absolute bottom-2 right-2 z-30 px-2.5 py-0.5 backdrop-blur-md text-[10px] font-bold tracking-wide rounded-md border border-white/15 shadow-sm">
+                        R {{ "%.2f"|format(p.list_price) }}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="studio-grid grid {{ grid_class }} gap-4 sm:gap-5">
+                {% for p in products %}
+                <a href="/product/{{ p.id }}" 
+                   oncontextmenu="return false;" 
+                   ondragstart="return false;"
+                   class="art-frame group block relative {{ aspect_class }} rounded-xl overflow-hidden shadow-sm border border-current/10 select-none">
+                    <img {% if not p.is_gif %}data-watermark{% endif %} src="{{ p.image_url }}" alt="{{ p.name }}" draggable="false" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out protected-artwork" crossorigin="anonymous">
+                    {% if ts.custom_art_overlay_url %}
+                    <img src="{{ ts.custom_art_overlay_url }}" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-fill pointer-events-none z-20">
+                    {% endif %}
+                    {% if p.is_gif %}
+                    <div class="absolute inset-0 z-10 flex items-center justify-center opacity-25 pointer-events-none">
+                        <span class="text-white font-black tracking-widest text-lg -rotate-12">ARTISTRY</span>
+                    </div>
+                    {% else %}
+                    <div class="absolute inset-0 z-10"></div>
+                    {% endif %}
+                    <div class="studio-badge absolute bottom-2 right-2 z-30 px-2.5 py-0.5 backdrop-blur-md text-[10px] font-bold tracking-wide rounded-md border border-white/15 shadow-sm">
+                        R {{ "%.2f"|format(p.list_price) }}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="studio-card rounded-3xl p-10 sm:p-16 text-center opacity-70">
+                <p class="text-sm break-words">No published artworks available in this studio yet.</p>
+            </div>
+        {% endif %}
+    {% endset %}
+
+    <!-- MODE A: FULL CUSTOM HTML LAYOUT (TOYHOUSE CODE MODE) -->
+    {% if ts.custom_mode and ts.custom_html.strip() %}
+        <div id="custom-studio-canvas" class="relative z-10 max-w-7xl mx-auto py-6 sm:py-8 px-3 sm:px-4 min-w-0">
+            {{ ts.custom_html
+                | replace('{{brand_name}}', config.brand_name | e)
+                | replace('{{bio}}', config.bio | e)
+                | replace('{{avatar_url}}', config.avatar_url | e)
+                | replace('{{cover_url}}', config.cover_url | e)
+                | replace('{{socials}}', socials_markup)
+                | replace('{{artworks}}', artworks_markup)
+                | safe
+            }}
+        </div>
+
+    <!-- MODE B: MODULAR PRESET + CUSTOM CSS -->
+    {% else %}
+        {% if ts.header_style == 'centered' %}
+        <!-- Centered Curator Header -->
+        <div class="relative z-10 max-w-5xl mx-auto pt-6 sm:pt-10 px-3 sm:px-4 min-w-0">
+            <div class="studio-card rounded-3xl shadow-sm text-center min-w-0">
+                {% if ts.show_cover %}
+                <div class="h-44 sm:h-52 w-full relative overflow-hidden rounded-t-3xl" oncontextmenu="return false;">
+                    <img src="{{ config.cover_url }}" alt="Cover" draggable="false" class="w-full h-full object-cover protected-artwork">
+                </div>
+                {% endif %}
+                <div class="p-5 sm:p-8 {% if ts.show_cover %}-mt-14 sm:-mt-16{% endif %} relative flex flex-col items-center min-w-0">
+                    <div class="relative w-24 h-24 sm:w-28 sm:h-28 mb-4 flex-shrink-0" oncontextmenu="return false;">
+                        <div class="studio-avatar w-full h-full rounded-full border-4 border-white/80 overflow-hidden shadow-md">
+                            <img src="{{ config.avatar_url }}" alt="{{ config.brand_name }}" draggable="false" class="w-full h-full object-cover protected-artwork">
+                        </div>
+                        {% if ts.custom_avatar_overlay_url %}
+                        <img src="{{ ts.custom_avatar_overlay_url }}" alt="" aria-hidden="true" class="studio-avatar-overlay absolute -top-5 -left-4 w-[144px] h-[132px] max-w-none object-contain pointer-events-none z-20">
+                        {% endif %}
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight break-words max-w-full">{{ config.brand_name }}</h1>
+                    <p class="opacity-85 text-sm mt-2 max-w-xl break-words">{{ config.bio }}</p>
+                    {{ socials_markup | safe }}
+                </div>
+            </div>
+        </div>
+
+        {% elif ts.header_style == 'minimal' %}
+        <!-- Ultra-Minimalist Header -->
+        <div class="relative z-10 max-w-7xl mx-auto pt-6 sm:pt-10 px-3 sm:px-4 min-w-0">
+            <div class="studio-card rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-5 min-w-0">
+                <div class="relative w-16 h-16 flex-shrink-0" oncontextmenu="return false;">
+                    <div class="studio-avatar w-full h-full rounded-full overflow-hidden border border-current/20">
+                        <img src="{{ config.avatar_url }}" alt="{{ config.brand_name }}" draggable="false" class="w-full h-full object-cover protected-artwork">
+                    </div>
+                    {% if ts.custom_avatar_overlay_url %}
+                    <img src="{{ ts.custom_avatar_overlay_url }}" alt="" aria-hidden="true" class="studio-avatar-overlay absolute -top-3 -left-2.5 w-[84px] h-[76px] max-w-none object-contain pointer-events-none z-20">
+                    {% endif %}
+                </div>
+                <div class="text-center sm:text-left min-w-0 flex-1">
+                    <h1 class="text-xl sm:text-2xl font-black break-words">{{ config.brand_name }}</h1>
+                    <p class="opacity-85 text-xs mt-1 max-w-2xl break-words">{{ config.bio }}</p>
+                    {{ socials_markup | safe }}
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Classic Banner Header -->
+        <div class="relative z-10 max-w-7xl mx-auto studio-card border-b border-x shadow-sm rounded-b-2xl min-w-0">
+            {% if ts.show_cover %}
+            <div class="h-48 sm:h-64 w-full relative overflow-hidden" oncontextmenu="return false;">
+                <img src="{{ config.cover_url }}" alt="Cover" draggable="false" class="w-full h-full object-cover protected-artwork">
+            </div>
+            {% endif %}
+
+            <div class="px-4 sm:px-8 pb-6 {% if ts.show_cover %}pt-0 -mt-14 sm:-mt-16{% else %}pt-8{% endif %} relative flex flex-col md:flex-row items-center md:items-end justify-between gap-4 sm:gap-6 min-w-0">
+                <div class="flex flex-col md:flex-row items-center md:items-end gap-4 sm:gap-6 text-center md:text-left min-w-0 w-full">
+                    <div class="relative w-28 h-28 sm:w-36 sm:h-36 flex-shrink-0" oncontextmenu="return false;">
+                        <div class="studio-avatar w-full h-full rounded-full border-4 border-white/80 overflow-hidden shadow-md">
+                            <img src="{{ config.avatar_url }}" alt="{{ config.brand_name }}" draggable="false" class="w-full h-full object-cover protected-artwork">
+                        </div>
+                        {% if ts.custom_avatar_overlay_url %}
+                        <img src="{{ ts.custom_avatar_overlay_url }}" alt="" aria-hidden="true" class="studio-avatar-overlay absolute -top-[26px] -left-[28px] w-[200px] h-[170px] max-w-none object-contain pointer-events-none z-20">
+                        {% endif %}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h1 class="text-2xl sm:text-3xl font-black break-words">{{ config.brand_name }}</h1>
+                        <p class="opacity-85 text-sm mt-1 max-w-xl break-words">{{ config.bio }}</p>
+                        {{ socials_markup | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Catalog Section -->
+        <main class="relative z-10 max-w-7xl mx-auto py-8 sm:py-12 px-3 sm:px-4 space-y-6 min-w-0">
+            <div>
+                <h2 class="studio-catalog-label text-xs font-black uppercase tracking-widest opacity-80 break-words">Curated Exhibition Catalog</h2>
+            </div>
+            {{ artworks_markup | safe }}
+        </main>
+    {% endif %}
+
+    <!-- Watermark Script (Skips GIFs so animation stays smooth) -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('img[data-watermark]').forEach(img => {
+                if (img.src.toLowerCase().endsWith('.gif')) return;
+                const updateImageWithWatermark = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || 600;
+                    canvas.height = img.naturalHeight || 600;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    ctx.font = 'bold ' + (canvas.width / 12) + 'px sans-serif';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                    ctx.textAlign = 'center';
+                    const text = "ARTISTRY";
+                    const stepX = canvas.width / 2.5;
+                    const stepY = canvas.height / 2.5;
+                    ctx.save();
+                    ctx.rotate(-20 * Math.PI / 180);
+                    for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
+                        for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
+                            ctx.fillText(text, x, y);
+                        }
+                    }
+                    ctx.restore();
+                    img.src = canvas.toDataURL('image/jpeg', 0.9);
+                };
+                if (img.complete) updateImageWithWatermark();
+                else img.onload = updateImageWithWatermark;
+            });
+        });
+    </script>
+</body>
+</html>
