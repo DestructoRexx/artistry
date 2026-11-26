@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "product_id": 5,
+    "parent_id": null,
+    "reply_to_name": "",
+    "author_email": "tylermahogany1@gmail.com",
+    "author_name": "Alex Creations",
+    "author_avatar": "/static/uploads/avatar_alex_creations.jpg",
+    "author_role": "artist",
+    "author_slug": "alex_creations",
+    "body": "The Orb Person is a great piece of work and it can be yours. Dont miss out!",
+    "created_at": "2026-11-24T20:48:12.489976+00:00"
+  },
+  {
+    "id": 2,
+    "product_id": 5,
+    "parent_id": 1,
+    "reply_to_name": "Alex Creations",
+    "author_email": "tylermahogany1@gmail.com",
+    "author_name": "Alex Creations",
+    "author_avatar": "/static/uploads/avatar_alex_creations.jpg",
+    "author_role": "artist",
+    "author_slug": "alex_creations",
+    "body": "Only for R400!!",
+    "created_at": "2026-11-24T20:51:54.576673+00:00"
+  }
+]
